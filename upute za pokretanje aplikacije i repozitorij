@@ -1,0 +1,94 @@
+Kako bi se baza podataka pokrenula potrebni su paketi:
+docker
+docker-compose
+node
+npm
+
+
+docker i docker-compose instalacija (postupak preuzet sa https://docs.docker.com/engine/install/ubuntu/):
+
+sudo apt-get update
+
+sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+ 
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+ sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+ sudo apt-get update
+
+ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+--------------------------------------------------------------------------
+
+
+Baza podataka:
+
+
+Unutar datoteke /baza nalazi se .yml file putem kojeg se pokreću servisi potrebni za apache kafka server i ksqldb
+Sljedeća komanda će pokrenuti i po potrebi instalirati server:
+
+sudo docker-compose -f kafka-ksqldb.yml up
+
+Ostavite docker kontejner upaljen u pozadini
+Ako u preglednik unesete adresu: http://localhost:8088 trebali bi ste dobiti natrag JSON datoteku od ksqldb i time znate da server radi
+
+Za spajanje na ksqldb-cli kontejner možete pokrenuti pokreniKSQL-CLI.sh datoteku koja je došla sa repozitorijem ili unijeti naredbu:
+sudo docker exec -it ksqldb-cli ksql http://ksqldb-server:8088
+
+Unutar datoteke kreiranje.sql se nalaze sve SQL komande potrebne za izradu baze podataka.
+
+
+--------------------------------------------------------------------------
+Web server:
+
+
+node i npm se dohvaćaju pomoću sljedećih naredbi:
+
+curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+
+za testiranje unesite naredbe:
+node -v
+npm -v
+
+
+za pokretanje web servera, uđite u datoteku /aplikacija i unesite naredbu:
+npm run devstart
+
+Ostavite terminal otvoren u pozadini, web aplikacija se nalazi na adresi http://localhost:3000
+Moguće putanje su:
+http://localhost:3000/
+http://localhost:3000/brzina
+http://localhost:3000/toplina
+http://localhost:3000/svjetlost
+
+Sve ostale putanje vode u API koji vraća JSON datoteke iz baze
+http://localhost:3000/API
+/aktivniSvi
+/aktivniVrste
+/upitiSat
+/brzine/senzori
+/brzine/prosjek
+/topline/senzori
+/topline/prosjek
+/svjetlost/senzori
+/svjetlost/prosjek
+/broj_upita_ukupno_u_satu
+
+
+--------------------------------------------------------------------------
+
+GitHub repozitorij: https://github.com/lignjatov/TBP_Projekt/tree/master
